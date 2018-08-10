@@ -25,12 +25,10 @@ public class HomeController {
 		login.setUsername(login.getUsername());
 		login.setPassword(login.getPassword());
 
-		if(login.getUsername()=="admin" && login.getPassword()=="admin")
-		{
+		if(login.getUsername()=="admin" && login.getPassword()=="admin") {
 			return login;	
 		}
-		else
-		{
+		else {
 		System.out.println("wrong credentials");
 		}
 		return login;	
