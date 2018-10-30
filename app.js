@@ -32,7 +32,7 @@ app.use(bodyParser.urlencoded({ extended: true }))
 
 var mongoose = require("mongoose");
 mongoose.Promise = global.Promise;
-mongoose.connect("mongodb://localhost:27017/Employee");
+mongoose.connect("mongodb://13.233.71.164:27017/Employee");
 
 	var allowCrossDomain = function(req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
