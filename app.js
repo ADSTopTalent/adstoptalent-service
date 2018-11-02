@@ -56,14 +56,17 @@ mongoose.connect("mongodb://localhost:27017/Employee");
   app.disable('etag');
 
 	var UserSchema = mongoose.Schema({
- 		/*email: String,
-    name : String,
-    password : String,
-    address : String */
     firstname: String,
     lastname: String,
     emailId: String,
-    newToken:String
+    newToken:String,
+    password:String,
+    address1:String,
+    address2:String,
+    city:String,
+    state:String,
+    zip:String,
+    country:String
 	});
 	var User = mongoose.model('User', UserSchema);
 	module.export = User;
@@ -85,23 +88,25 @@ mongoose.connect("mongodb://localhost:27017/Employee");
     })
   })
 
-	app.post('/attendence',function(req,res,next){
-    	var result=req.body;
-    	console.log(req.body);
-    	if(result!=null){
-    		res.json({result:success});
-    	}
-    	else{
-    		res.json("error");
-    	}
+	app.post('/registerfinal',function(req,res,next){
+  	var emailId=req.body.emailId;
+    var password=req.body.password;
+    var address1=req.body.address1;
+    var address2=req.body.address2;
+    var city=req.body.city;
+    var state=req.body.state;
+    var zip=req.body.zip;
+    var country=req.body.country;
+    console.log(req.body);
+    console.log(emailId);
+    User.updateOne({emailId:emailId}, { $set: {password:password, address1:address1,address2:address2,city:city,state:state,zip:zip,country:country } },{upsert:false,multi:true}, function(err, res) {
+      if (err) throw err;
+      res.json(res);
+    });
 	});
 
 
 	app.post('/register', function(req, res, next) {
-  		/* var name = req.body.name;
-    var email = req.body.email;
-    var password = req.body.password;
-    var address = req.body.address;*/
     var firstname = req.body.firstname;
     var lastname = req.body.lastname;
     var emailId = req.body.emailId;
@@ -120,8 +125,7 @@ mongoose.connect("mongodb://localhost:27017/Employee");
       emailId : emailId ,
       newToken:newToken
     });
-      
-
+    
     var transporter = nodemailer.createTransport({
       host: 'smtp.gmail.com',
       port: 587,
@@ -134,15 +138,13 @@ mongoose.connect("mongodb://localhost:27017/Employee");
       }
     });
 
-    rand=Math.floor((Math.random() * 100) + 54);
-    host=req.get('host');
-    link="dev.adstoptalent.com/verify?id="+newToken;
+    link="http://192.168.0.172:5000/verify/"+newToken;
 
     var mailOptions = {
       from: 'sanjeevkaushik1195@gmail.com',
       to: req.body.emailId,
       subject: 'Sending Email using Node.js',
-      html: "<a href="+link+">Open Link to Verify</a>"
+      html:'<p>Thanks for registering with us!Please verify using below link</p><a href='+link+'>'+link+'</a>'
     };
 
     transporter.sendMail(mailOptions, function(error, info){
@@ -161,29 +163,22 @@ mongoose.connect("mongodb://localhost:27017/Employee");
       } else {
           console.log('THIS IS ISMATCH RESPONSE')
           res.json({"status": true})  
-        }
+      }
     })
-   		/*var qr_svg = qr.image(data, { type: 'png' });
-   		var img_name = qr_svg.pipe(require('fs').createWriteStream('./public/'+user._id+'.png'));
-      */
 	});
 
-  app.get('/verify',function(req,res){
-    console.log(req.protocol+":/"+req.get('host'));
-    if((req.protocol+"://"+req.get('host'))==("http://"+host))  {
-        console.log("Domain is matched. Information is from Authentic email");
-        if(req.query.id==rand) {   
-            res.sendRedirect('http:192.168.0.172:5000');
-            res.end();
+  app.post('/verify',function(req,res){
+    var newToken = req.body.token;
+    User.findOne({newToken:newToken}, function(err, isMatch) {
+      console.log('ISMATCH IS: ' + isMatch)
+      if(err) {
+        console.log('THIS IS ERROR RESPONSE')
+        res.json(err)
+      } else {
+          console.log('THIS IS ISMATCH RESPONSE');
+          res.json(isMatch);
         }
-        else{
-            console.log("email is not verified");
-            res.send({"status":false});
-        }
-    }
-    else{
-        res.end("<h1>Request is from unknown source");
-    }
+    })
   });
 
 app.use(function(req, res, next) {
