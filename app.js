@@ -16,6 +16,7 @@ var mysql = require('mysql');
 var app = express();
 var cookieParser = require('cookie-parser');
 app.use(cookieParser());
+// view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 var bodyParser = require('body-parser');
@@ -31,7 +32,7 @@ app.use(bodyParser.urlencoded({ extended: true }))
 
 var mongoose = require("mongoose");
 mongoose.Promise = global.Promise;
-mongoose.connect("mongodb://13.233.71.164:27017/Employee");
+mongoose.connect("mongodb://localhost:27017/Employee");
 
 	var allowCrossDomain = function(req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
@@ -98,9 +99,9 @@ mongoose.connect("mongodb://13.233.71.164:27017/Employee");
     var country=req.body.country;
     console.log(req.body);
     console.log(emailId);
-    User.updateOne({emailId:emailId}, { $set: {password:password, address1:address1,address2:address2,city:city,state:state,zip:zip,country:country } },{upsert:false,multi:true}, function(err, res) {
+    User.updateOne({emailId:emailId}, { $set: {password:password, address1:address1,address2:address2,city:city,state:state,zip:zip,country:country } },{upsert:false,multi:true}, function(err, isMatch) {
       if (err) throw err;
-      res.json(res);
+      res.json(isMatch);
     });
 	});
 
