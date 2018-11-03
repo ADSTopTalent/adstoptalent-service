@@ -11,10 +11,5 @@
        "NODE_ENV": "production",
        "PORT" : 6000
     }
-  },{
-    "name"       : "api-app",
-    "script"     : "./api.js",
-    "instances"  : 4,
-    "exec_mode"  : "cluster"
   }]
 }
