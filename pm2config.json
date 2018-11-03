@@ -10,8 +10,8 @@
        "NODE_ENV": "production"
     }
   },{
-    "name"       : "app",
-    "script"     : "./app.js",
+    "name"       : "api-app",
+    "script"     : "./api.js",
     "instances"  : 4,
     "exec_mode"  : "cluster"
   }]
