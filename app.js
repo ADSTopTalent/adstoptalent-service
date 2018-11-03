@@ -3,7 +3,6 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 const Grid = require('gridfs-stream');
-const port = 3000;
 var logger = require('morgan');
 var nodemailer = require('nodemailer');
 var jwt = require('jsonwebtoken');
@@ -193,5 +192,4 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-app.listen(port);
 module.exports = app;
