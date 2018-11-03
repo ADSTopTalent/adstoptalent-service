@@ -4,12 +4,15 @@
     "script"      : "./app.js",
     "watch"       : true,
     "env": {
-      "NODE_ENV": "development",
-      "PORT" : 3000
+      "NODE_ENV": "development"
     },
     "env_production" : {
-       "NODE_ENV": "production",
-       "PORT" : 6000
+       "NODE_ENV": "production"
     }
+  },{
+    "name"       : "api-app",
+    "script"     : "./api.js",
+    "instances"  : 4,
+    "exec_mode"  : "cluster"
   }]
 }
