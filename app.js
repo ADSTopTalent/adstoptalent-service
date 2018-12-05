@@ -138,7 +138,7 @@ mongoose.connect("mongodb://localhost:27017/Employee");
       }
     });
 
-    link="http://13.233.71.64:8000/verify/"+newToken;
+    link="dev1.adstoptalent.com/verify/"+newToken;
 
     var mailOptions = {
       from: 'sanjeevkaushik1195@gmail.com',
