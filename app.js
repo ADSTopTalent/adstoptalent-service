@@ -134,7 +134,7 @@ mongoose.connect("mongodb://localhost:27017/Employee");
       service: 'gmail',
       auth: {
          user: 'sanjeevkaushik1195@gmail.com',
-        pass: 'lovingdad@143()'
+        pass: 'mummypapa1'
       }
     });
 
