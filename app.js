@@ -66,7 +66,11 @@ mongoose.connect("mongodb://localhost:27017/Employee");
     city:String,
     state:String,
     zip:String,
-    country:String
+    country:String,
+    Organization:String,
+    Name:String,
+    Designation:String,
+    Employee:String
 	});
 	var User = mongoose.model('User', UserSchema);
 	module.export = User;
@@ -105,13 +109,44 @@ mongoose.connect("mongodb://localhost:27017/Employee");
     });
 	});
 
+  app.post('/registerfinalemployer',function(req,res,next){
+    var emailId=req.body.emailId;
+    var password=req.body.password;
+    var address1=req.body.address1;
+    var address2=req.body.address2;
+    var city=req.body.city;
+    var state=req.body.state;
+    var zip=req.body.zip;
+    var country=req.body.country;
+    console.log(req.body);
+    console.log(emailId);
+    User.updateOne({emailId:emailId}, { $set: {password:password, address1:address1,address2:address2,city:city,state:state,zip:zip,country:country } },{upsert:false,multi:true}, function(err, isMatch) {
+      if (err) throw err;
+      res.json(isMatch);
+    });
+  });
 
-	app.post('/register', function(req, res, next) {
-    var firstname = req.body.firstname;
-    var lastname = req.body.lastname;
-    var emailId = req.body.emailId;
-		var imgPath = './public';
-		console.log(req.body);
+  app.post('/registeremployer', function(req, res, next) {
+    console.log(req.body);
+    var Organization = req.body.Organization;
+    var emailId = req.body.EmailId;
+    var Name = req.body.Name;
+    var Designation = req.body.Designation;
+    var Employee = req.body.Employee;
+
+    var imgPath = './public';
+    console.log(req.body);
+
+
+     User.findOne({emailId:emailId}, function(err, isMatch) {
+      console.log('match is '+isMatch);
+      console.log('err is '+err);
+      if(isMatch !=null) {
+        console.log('Username Already exist')
+        res.json("null");
+        console.log("null");
+      } else {
+        
 
     var newToken = jwt.sign({
       data: 'user'
@@ -119,12 +154,15 @@ mongoose.connect("mongodb://localhost:27017/Employee");
     console.log(newToken);
     console.log(req.body);
 
-		var user = new User({
-  		firstname : firstname ,
-      lastname : lastname ,
+    var user = new User({
+      Organization : Organization ,
       emailId : emailId ,
+      Name : Name ,
+      Designation:Designation,
+      Employee:Employee,
       newToken:newToken
     });
+    
     
     var transporter = nodemailer.createTransport({
       host: 'smtp.gmail.com',
@@ -133,17 +171,17 @@ mongoose.connect("mongodb://localhost:27017/Employee");
       requireTLS: true,
       service: 'gmail',
       auth: {
-         user: 'sanjeevkaushik1195@gmail.com',
-        pass: 'mummypapa1'
+        user: 'adsbuilduser@gmail.com',
+        pass: 'ads@123()'
       }
     });
 
-    link="http://13.233.71.164:80/verify/"+newToken;
+    link="http://13.233.71.164:80/verifyemployer/"+newToken;
 
     var mailOptions = {
-      from: 'sanjeevkaushik1195@gmail.com',
-      to: req.body.emailId,
-      subject: 'Sending Email using Node.js',
+      from: 'adsbuilduser@gmail.com',
+      to: req.body.EmailId,
+      subject: 'Please Verify ADS Account',
       html:'<p>Thanks for registering with us!Please verify using below link</p><a href='+link+'>'+link+'</a>'
     };
 
@@ -165,6 +203,80 @@ mongoose.connect("mongodb://localhost:27017/Employee");
           res.json({"status": true})  
       }
     })
+      }
+    })
+  });
+
+	app.post('/register', function(req, res, next) {
+    var firstname = req.body.firstname;
+    var lastname = req.body.lastname;
+    var emailId = req.body.emailId;
+		var imgPath = './public';
+		console.log(req.body);
+
+    User.findOne({emailId:emailId}, function(err, isMatch) {
+      console.log('match is '+isMatch);
+      console.log('err is '+err);
+      if(isMatch !=null) {
+        console.log('Username Already exist')
+        res.json("null");
+        console.log("null");
+      } else {
+
+    var newToken = jwt.sign({
+      data: 'user'
+    }, 'secret', { expiresIn: '1h' });
+    console.log(newToken);
+    console.log(req.body);
+
+		var user = new User({
+  		firstname : firstname ,
+      lastname : lastname ,
+      emailId : emailId ,
+      newToken:newToken
+    });
+    
+    var transporter = nodemailer.createTransport({
+      host: 'smtp.gmail.com',
+      port: 587,
+      secure: false,
+      requireTLS: true,
+      service: 'gmail',
+      auth: {
+        user: 'adsbuilduser@gmail.com',
+        pass: 'ads@123()'
+      }
+    });
+
+    link="http://13.233.71.164:80/verify/"+newToken;
+
+    var mailOptions = {
+      from: 'adsbuilduser@gmail.com',
+      to: req.body.emailId,
+      subject: 'Please Verify ADS Account',
+      html:'<p>Thanks for registering with us!Please verify using below link</p><a href='+link+'>'+link+'</a>'
+    };
+
+    transporter.sendMail(mailOptions, function(error, info){
+      if (error) {
+        console.log(error);
+      } else {
+        console.log('Email sent: ' + info.response);
+      }
+    });
+   
+    user.save(user, function(err, isMatch) {
+      console.log('ISMATCH IS: ' + isMatch)
+      if(err) {
+        console.log('THIS IS ERROR RESPONSE')
+        res.json({"status": false})
+      } else {
+          console.log('THIS IS ISMATCH RESPONSE')
+          res.json({"status": true})  
+      }
+    })
+      }
+    })
 	});
 
   app.post('/verify',function(req,res){
@@ -180,6 +292,21 @@ mongoose.connect("mongodb://localhost:27017/Employee");
         }
     })
   });
+
+  app.post('/verifyemployer',function(req,res){
+    var newToken = req.body.token;
+    User.findOne({newToken:newToken}, function(err, isMatch) {
+      console.log('ISMATCH IS: ' + isMatch)
+      if(err) {
+        console.log('THIS IS ERROR RESPONSE')
+        res.json(err)
+      } else {
+          console.log('THIS IS ISMATCH RESPONSE');
+          res.json(isMatch);
+        }
+    })
+  });
+
 
 app.use(function(req, res, next) {
   next(createError(404));
